@@ -3,7 +3,7 @@
 	public class HomeVM
 	{
 
-		public IEnumerable<Productos> cursos { get; set; }
+		public IEnumerable<Productos> productos { get; set; }
 	
 	}
 }

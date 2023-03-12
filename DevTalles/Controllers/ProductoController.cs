@@ -189,6 +189,40 @@ namespace E_comerce.Controllers
 
         }
 
+        public IActionResult Eliminar(int id)
+        {
+            var prod = db.Producto.Find(id);
+
+            if (prod == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+
+
+                var RootPath = hostEnvironment.WebRootPath;
+                string Upload = RootPath + RUTAIMAGEN.RutaImagen;
+
+
+
+                var urlimagenAnterior = Path.Combine(Upload, prod.ImagenUrl);
+
+
+
+
+                if (System.IO.File.Exists(urlimagenAnterior))
+                {
+                    System.IO.File.Delete(urlimagenAnterior);
+                }
+
+                db.Producto.Remove(prod);
+                db.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+        }
+
 
 
         public IEnumerable<SelectListItem> DropdownCategoria()

@@ -24,7 +24,7 @@ namespace E_comerce.Controllers
         {
             HomeVM model = new HomeVM()
             {
-                cursos = context.Producto.Include(c => c.Categoria)
+                productos = context.Producto.Include(c => c.Categoria)
               
             };
 
