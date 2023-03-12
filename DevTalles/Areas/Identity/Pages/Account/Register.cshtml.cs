@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using E_comerce.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +26,7 @@ namespace E_comerce.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
@@ -35,7 +37,7 @@ namespace E_comerce.Areas.Identity.Pages.Account
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -43,6 +45,7 @@ namespace E_comerce.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -102,8 +105,39 @@ namespace E_comerce.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if (!await _roleManager.RoleExistsAsync(RUTAIMAGEN.admin))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(RUTAIMAGEN.admin));
+                await _roleManager.CreateAsync(new IdentityRole(RUTAIMAGEN.user));
+            }
+
+            var UserEmail = "jadan@admin.com";
+            var Admin = await _userManager.FindByEmailAsync(UserEmail);
+
+
+            if (Admin == null)
+            {
+                Admin = new IdentityUser()
+                {
+                    Email = UserEmail,
+                    UserName = UserEmail
+                };
+
+
+                await _userManager.CreateAsync(Admin, "Jadan123*");
+            }
+
+
+            if (!await _userManager.IsInRoleAsync(Admin, RUTAIMAGEN.admin))
+            {
+                await _userManager.AddToRoleAsync(Admin, RUTAIMAGEN.admin);
+            }
+
+
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)

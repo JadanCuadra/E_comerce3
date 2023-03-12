@@ -2,7 +2,9 @@
 {
     public static class RUTAIMAGEN
     {
-        public static string RutaImagen = @"\imagenes\productos\";
+        public const string RutaImagen = @"\imagenes\productos\";
+        public const string admin = "administrador";
+        public const string user = "user";
     }
 }
 
