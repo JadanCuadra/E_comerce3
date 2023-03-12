@@ -1,6 +1,7 @@
 ﻿using E_comerce.Data;
 using E_comerce.Models;
 using E_comerce.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace E_comerce.Controllers
 {
+
+
+    [Authorize(Roles =RUTAIMAGEN.admin)]
     public class ProductoController : Controller
     {
         private readonly ApplicationDbContext db;

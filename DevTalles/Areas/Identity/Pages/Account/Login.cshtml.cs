@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using E_comerce.Data;
 
 namespace E_comerce.Areas.Identity.Pages.Account
 {
@@ -21,11 +22,15 @@ namespace E_comerce.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -86,6 +91,37 @@ namespace E_comerce.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+
+            if (!await _roleManager.RoleExistsAsync(RUTAIMAGEN.admin))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(RUTAIMAGEN.admin));
+                await _roleManager.CreateAsync(new IdentityRole(RUTAIMAGEN.user));
+            }
+
+            var UserEmail = "jadan@admin.com";
+            var Admin = await _userManager.FindByEmailAsync(UserEmail);
+
+
+            if (Admin == null)
+            {
+                Admin = new IdentityUser()
+                {
+                    Email = UserEmail,
+                    UserName = UserEmail
+                };
+
+
+                await _userManager.CreateAsync(Admin, "Jadan123*");
+            }
+
+
+            if (!await _userManager.IsInRoleAsync(Admin, RUTAIMAGEN.admin))
+            {
+                await _userManager.AddToRoleAsync(Admin, RUTAIMAGEN.admin);
+            }
+
+
+
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);

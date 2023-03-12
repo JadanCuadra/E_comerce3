@@ -1,10 +1,13 @@
 ﻿using E_comerce.Data;
 using E_comerce.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace E_comerce.Controllers
 {
+    [Authorize(Roles = RUTAIMAGEN.admin)]
     public class CategoriaController : Controller
     {
         private readonly ApplicationDbContext _db;
